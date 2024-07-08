@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycar.mappers.RetucarMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easycar.entity.bean.Retucar">
+		<!---->
+		<id column="return_id" property="returnId"  />
+		<!---->
+		<result column="vehicle_id" property="vehicleId"  />
+		<!---->
+		<result column="driver_id" property="driverId"  />
+		<!---->
+		<result column="created_time" property="createdTime"  />
+		<!---->
+		<result column="return_time" property="returnTime"  />
+		<!---->
+		<result column="car_condition" property="carCondition"  />
+		<!---->
+		<result column="status" property="status"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 return_id,vehicle_id,driver_id,created_time,return_time,
+		 car_condition,status
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.returnId != null">
+				 and  return_id = #{query.returnId}
+			</if>
+			<if test="query.vehicleId != null">
+				 and  vehicle_id = #{query.vehicleId}
+			</if>
+			<if test="query.driverId != null">
+				 and  driver_id = #{query.driverId}
+			</if>
+			<if test="query.createdTime != null and query.createdTime!=''">
+				 <![CDATA[ and  created_time=str_to_date(#{query.createdTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.returnTime != null and query.returnTime!=''">
+				 <![CDATA[ and  return_time=str_to_date(#{query.returnTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.carCondition != null and query.carCondition!=''">
+				 and  car_condition = #{query.carCondition}
+			</if>
+			<if test="query.status != null">
+				 and  status = #{query.status}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.createdTimeStart!= null and query.createdTimeStart!=''">
+				 <![CDATA[ and  created_time>=str_to_date(#{query.createdTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createdTimeEnd!= null and query.createdTimeEnd!=''">
+				 <![CDATA[ and  created_time< date_sub(str_to_date(#{query.createdTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.returnTimeStart!= null and query.returnTimeStart!=''">
+				 <![CDATA[ and  return_time>=str_to_date(#{query.returnTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.returnTimeEnd!= null and query.returnTimeEnd!=''">
+				 <![CDATA[ and  return_time< date_sub(str_to_date(#{query.returnTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.carConditionFuzzy!= null  and query.carConditionFuzzy!=''">
+				 and  car_condition like concat('%', #{query.carConditionFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM retucar <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM retucar <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easycar.entity.bean.Retucar">
+		<selectKey keyProperty="bean.returnId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO retucar
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.vehicleId != null">
+				 vehicle_id,
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id,
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time,
+			</if>
+			<if test="bean.returnTime != null">
+				 return_time,
+			</if>
+			<if test="bean.carCondition != null">
+				 car_condition,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.vehicleId!=null">
+				 #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId!=null">
+				 #{bean.driverId},
+			</if>
+			<if test="bean.createdTime!=null">
+				 #{bean.createdTime},
+			</if>
+			<if test="bean.returnTime!=null">
+				 #{bean.returnTime},
+			</if>
+			<if test="bean.carCondition!=null">
+				 #{bean.carCondition},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easycar.entity.bean.Retucar">
+		 INSERT INTO retucar
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.returnId != null">
+				 return_id,
+			</if>
+			<if test="bean.vehicleId != null">
+				 vehicle_id,
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id,
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time,
+			</if>
+			<if test="bean.returnTime != null">
+				 return_time,
+			</if>
+			<if test="bean.carCondition != null">
+				 car_condition,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.returnId!=null">
+				 #{bean.returnId},
+			</if>
+			<if test="bean.vehicleId!=null">
+				 #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId!=null">
+				 #{bean.driverId},
+			</if>
+			<if test="bean.createdTime!=null">
+				 #{bean.createdTime},
+			</if>
+			<if test="bean.returnTime!=null">
+				 #{bean.returnTime},
+			</if>
+			<if test="bean.carCondition!=null">
+				 #{bean.carCondition},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.vehicleId!=null">
+				 vehicle_id = VALUES(vehicle_id),
+			</if>
+			<if test="bean.driverId!=null">
+				 driver_id = VALUES(driver_id),
+			</if>
+			<if test="bean.createdTime!=null">
+				 created_time = VALUES(created_time),
+			</if>
+			<if test="bean.returnTime!=null">
+				 return_time = VALUES(return_time),
+			</if>
+			<if test="bean.carCondition!=null">
+				 car_condition = VALUES(car_condition),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easycar.entity.bean.Retucar" useGeneratedKeys="true" keyProperty="returnId">
+		 INSERT INTO retucar(
+			 vehicle_id,
+			 driver_id,
+			 created_time,
+			 return_time,
+			 car_condition,
+			 status
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.vehicleId},
+				 #{item.driverId},
+				 #{item.createdTime},
+				 #{item.returnTime},
+				 #{item.carCondition},
+				 #{item.status}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easycar.entity.bean.Retucar">
+		 INSERT INTO retucar(
+			 vehicle_id,
+			 driver_id,
+			 created_time,
+			 return_time,
+			 car_condition,
+			 status
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.vehicleId},
+				 #{item.driverId},
+				 #{item.createdTime},
+				 #{item.returnTime},
+				 #{item.carCondition},
+				 #{item.status}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			vehicle_id = VALUES(vehicle_id),
+			driver_id = VALUES(driver_id),
+			created_time = VALUES(created_time),
+			return_time = VALUES(return_time),
+			car_condition = VALUES(car_condition),
+			status = VALUES(status)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easycar.entity.querybean.RetucarQuery">
+		 UPDATE retucar
+ 		 <set> 
+			<if test="bean.vehicleId != null">
+				 vehicle_id = #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id = #{bean.driverId},
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time = #{bean.createdTime},
+			</if>
+			<if test="bean.returnTime != null">
+				 return_time = #{bean.returnTime},
+			</if>
+			<if test="bean.carCondition != null">
+				 car_condition = #{bean.carCondition},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from retucar
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据ReturnId修改-->
+	<update id="updateByReturnId" parameterType="com.easycar.entity.bean.Retucar">
+		 UPDATE retucar
+ 		 <set> 
+			<if test="bean.vehicleId != null">
+				 vehicle_id = #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id = #{bean.driverId},
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time = #{bean.createdTime},
+			</if>
+			<if test="bean.returnTime != null">
+				 return_time = #{bean.returnTime},
+			</if>
+			<if test="bean.carCondition != null">
+				 car_condition = #{bean.carCondition},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+ 		 </set>
+ 		 where return_id=#{returnId}
+	</update>
+
+	<!-- 根据ReturnId删除-->
+	<delete id="deleteByReturnId">
+		delete from retucar where return_id=#{returnId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByReturnId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from retucar where return_id=#{returnId}
+	</select>
+
+</mapper>

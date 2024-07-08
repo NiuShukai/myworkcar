@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycar.mappers.OrdersMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easycar.entity.bean.Orders">
+		<!---->
+		<id column="orders_id" property="ordersId"  />
+		<!---->
+		<result column="vehicle_id" property="vehicleId"  />
+		<!---->
+		<result column="driver_id" property="driverId"  />
+		<!---->
+		<result column="startlocation" property="startlocation"  />
+		<!---->
+		<result column="endlocation" property="endlocation"  />
+		<!---->
+		<result column="starttime" property="starttime"  />
+		<!---->
+		<result column="endtime" property="endtime"  />
+		<!---->
+		<result column="status" property="status"  />
+		<!---->
+		<result column="created_time" property="createdTime"  />
+		<!---->
+		<result column="over_time" property="overTime"  />
+		<!---->
+		<result column="price" property="price"  />
+		<!---->
+		<result column="duration" property="duration"  />
+		<!---->
+		<result column="startlatitude" property="startlatitude"  />
+		<!---->
+		<result column="startlongtitude" property="startlongtitude"  />
+		<!---->
+		<result column="endlatitude" property="endlatitude"  />
+		<!---->
+		<result column="endlongtitude" property="endlongtitude"  />
+		<!---->
+		<result column="appuser_id" property="appuserId"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 orders_id,vehicle_id,driver_id,startlocation,endlocation,
+		 starttime,endtime,status,created_time,over_time,
+		 price,duration,startlatitude,startlongtitude,endlatitude,
+		 endlongtitude,appuser_id
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.ordersId != null">
+				 and  orders_id = #{query.ordersId}
+			</if>
+			<if test="query.vehicleId != null">
+				 and  vehicle_id = #{query.vehicleId}
+			</if>
+			<if test="query.driverId != null">
+				 and  driver_id = #{query.driverId}
+			</if>
+			<if test="query.startlocation != null and query.startlocation!=''">
+				 and  startlocation = #{query.startlocation}
+			</if>
+			<if test="query.endlocation != null and query.endlocation!=''">
+				 and  endlocation = #{query.endlocation}
+			</if>
+			<if test="query.starttime != null and query.starttime!=''">
+				 <![CDATA[ and  starttime=str_to_date(#{query.starttime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.endtime != null and query.endtime!=''">
+				 <![CDATA[ and  endtime=str_to_date(#{query.endtime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.status != null">
+				 and  status = #{query.status}
+			</if>
+			<if test="query.createdTime != null and query.createdTime!=''">
+				 <![CDATA[ and  created_time=str_to_date(#{query.createdTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.overTime != null and query.overTime!=''">
+				 <![CDATA[ and  over_time=str_to_date(#{query.overTime}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.price != null">
+				 and  price = #{query.price}
+			</if>
+			<if test="query.duration != null">
+				 and  duration = #{query.duration}
+			</if>
+			<if test="query.startlatitude != null and query.startlatitude!=''">
+				 and  startlatitude = #{query.startlatitude}
+			</if>
+			<if test="query.startlongtitude != null and query.startlongtitude!=''">
+				 and  startlongtitude = #{query.startlongtitude}
+			</if>
+			<if test="query.endlatitude != null and query.endlatitude!=''">
+				 and  endlatitude = #{query.endlatitude}
+			</if>
+			<if test="query.endlongtitude != null and query.endlongtitude!=''">
+				 and  endlongtitude = #{query.endlongtitude}
+			</if>
+			<if test="query.appuserId != null">
+				 and  appuser_id = #{query.appuserId}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.startlocationFuzzy!= null  and query.startlocationFuzzy!=''">
+				 and  startlocation like concat('%', #{query.startlocationFuzzy}, '%')
+			</if>
+			<if test="query.endlocationFuzzy!= null  and query.endlocationFuzzy!=''">
+				 and  endlocation like concat('%', #{query.endlocationFuzzy}, '%')
+			</if>
+			<if test="query.starttimeStart!= null and query.starttimeStart!=''">
+				 <![CDATA[ and  starttime>=str_to_date(#{query.starttimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.starttimeEnd!= null and query.starttimeEnd!=''">
+				 <![CDATA[ and  starttime< date_sub(str_to_date(#{query.starttimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.endtimeStart!= null and query.endtimeStart!=''">
+				 <![CDATA[ and  endtime>=str_to_date(#{query.endtimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.endtimeEnd!= null and query.endtimeEnd!=''">
+				 <![CDATA[ and  endtime< date_sub(str_to_date(#{query.endtimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.createdTimeStart!= null and query.createdTimeStart!=''">
+				 <![CDATA[ and  created_time>=str_to_date(#{query.createdTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.createdTimeEnd!= null and query.createdTimeEnd!=''">
+				 <![CDATA[ and  created_time< date_sub(str_to_date(#{query.createdTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.overTimeStart!= null and query.overTimeStart!=''">
+				 <![CDATA[ and  over_time>=str_to_date(#{query.overTimeStart}, '%Y-%m-%d') ]]>
+			</if>
+			<if test="query.overTimeEnd!= null and query.overTimeEnd!=''">
+				 <![CDATA[ and  over_time< date_sub(str_to_date(#{query.overTimeEnd},'%Y-%m-%d'),interval -1 day) ]]>
+			</if>
+			<if test="query.startlatitudeFuzzy!= null  and query.startlatitudeFuzzy!=''">
+				 and  startlatitude like concat('%', #{query.startlatitudeFuzzy}, '%')
+			</if>
+			<if test="query.startlongtitudeFuzzy!= null  and query.startlongtitudeFuzzy!=''">
+				 and  startlongtitude like concat('%', #{query.startlongtitudeFuzzy}, '%')
+			</if>
+			<if test="query.endlatitudeFuzzy!= null  and query.endlatitudeFuzzy!=''">
+				 and  endlatitude like concat('%', #{query.endlatitudeFuzzy}, '%')
+			</if>
+			<if test="query.endlongtitudeFuzzy!= null  and query.endlongtitudeFuzzy!=''">
+				 and  endlongtitude like concat('%', #{query.endlongtitudeFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM orders <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM orders <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easycar.entity.bean.Orders">
+		<selectKey keyProperty="bean.ordersId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO orders
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.vehicleId != null">
+				 vehicle_id,
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id,
+			</if>
+			<if test="bean.startlocation != null">
+				 startlocation,
+			</if>
+			<if test="bean.endlocation != null">
+				 endlocation,
+			</if>
+			<if test="bean.starttime != null">
+				 starttime,
+			</if>
+			<if test="bean.endtime != null">
+				 endtime,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time,
+			</if>
+			<if test="bean.overTime != null">
+				 over_time,
+			</if>
+			<if test="bean.price != null">
+				 price,
+			</if>
+			<if test="bean.duration != null">
+				 duration,
+			</if>
+			<if test="bean.startlatitude != null">
+				 startlatitude,
+			</if>
+			<if test="bean.startlongtitude != null">
+				 startlongtitude,
+			</if>
+			<if test="bean.endlatitude != null">
+				 endlatitude,
+			</if>
+			<if test="bean.endlongtitude != null">
+				 endlongtitude,
+			</if>
+			<if test="bean.appuserId != null">
+				 appuser_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.vehicleId!=null">
+				 #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId!=null">
+				 #{bean.driverId},
+			</if>
+			<if test="bean.startlocation!=null">
+				 #{bean.startlocation},
+			</if>
+			<if test="bean.endlocation!=null">
+				 #{bean.endlocation},
+			</if>
+			<if test="bean.starttime!=null">
+				 #{bean.starttime},
+			</if>
+			<if test="bean.endtime!=null">
+				 #{bean.endtime},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.createdTime!=null">
+				 #{bean.createdTime},
+			</if>
+			<if test="bean.overTime!=null">
+				 #{bean.overTime},
+			</if>
+			<if test="bean.price!=null">
+				 #{bean.price},
+			</if>
+			<if test="bean.duration!=null">
+				 #{bean.duration},
+			</if>
+			<if test="bean.startlatitude!=null">
+				 #{bean.startlatitude},
+			</if>
+			<if test="bean.startlongtitude!=null">
+				 #{bean.startlongtitude},
+			</if>
+			<if test="bean.endlatitude!=null">
+				 #{bean.endlatitude},
+			</if>
+			<if test="bean.endlongtitude!=null">
+				 #{bean.endlongtitude},
+			</if>
+			<if test="bean.appuserId!=null">
+				 #{bean.appuserId},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easycar.entity.bean.Orders">
+		 INSERT INTO orders
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.ordersId != null">
+				 orders_id,
+			</if>
+			<if test="bean.vehicleId != null">
+				 vehicle_id,
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id,
+			</if>
+			<if test="bean.startlocation != null">
+				 startlocation,
+			</if>
+			<if test="bean.endlocation != null">
+				 endlocation,
+			</if>
+			<if test="bean.starttime != null">
+				 starttime,
+			</if>
+			<if test="bean.endtime != null">
+				 endtime,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time,
+			</if>
+			<if test="bean.overTime != null">
+				 over_time,
+			</if>
+			<if test="bean.price != null">
+				 price,
+			</if>
+			<if test="bean.duration != null">
+				 duration,
+			</if>
+			<if test="bean.startlatitude != null">
+				 startlatitude,
+			</if>
+			<if test="bean.startlongtitude != null">
+				 startlongtitude,
+			</if>
+			<if test="bean.endlatitude != null">
+				 endlatitude,
+			</if>
+			<if test="bean.endlongtitude != null">
+				 endlongtitude,
+			</if>
+			<if test="bean.appuserId != null">
+				 appuser_id,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.ordersId!=null">
+				 #{bean.ordersId},
+			</if>
+			<if test="bean.vehicleId!=null">
+				 #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId!=null">
+				 #{bean.driverId},
+			</if>
+			<if test="bean.startlocation!=null">
+				 #{bean.startlocation},
+			</if>
+			<if test="bean.endlocation!=null">
+				 #{bean.endlocation},
+			</if>
+			<if test="bean.starttime!=null">
+				 #{bean.starttime},
+			</if>
+			<if test="bean.endtime!=null">
+				 #{bean.endtime},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.createdTime!=null">
+				 #{bean.createdTime},
+			</if>
+			<if test="bean.overTime!=null">
+				 #{bean.overTime},
+			</if>
+			<if test="bean.price!=null">
+				 #{bean.price},
+			</if>
+			<if test="bean.duration!=null">
+				 #{bean.duration},
+			</if>
+			<if test="bean.startlatitude!=null">
+				 #{bean.startlatitude},
+			</if>
+			<if test="bean.startlongtitude!=null">
+				 #{bean.startlongtitude},
+			</if>
+			<if test="bean.endlatitude!=null">
+				 #{bean.endlatitude},
+			</if>
+			<if test="bean.endlongtitude!=null">
+				 #{bean.endlongtitude},
+			</if>
+			<if test="bean.appuserId!=null">
+				 #{bean.appuserId},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.vehicleId!=null">
+				 vehicle_id = VALUES(vehicle_id),
+			</if>
+			<if test="bean.driverId!=null">
+				 driver_id = VALUES(driver_id),
+			</if>
+			<if test="bean.startlocation!=null">
+				 startlocation = VALUES(startlocation),
+			</if>
+			<if test="bean.endlocation!=null">
+				 endlocation = VALUES(endlocation),
+			</if>
+			<if test="bean.starttime!=null">
+				 starttime = VALUES(starttime),
+			</if>
+			<if test="bean.endtime!=null">
+				 endtime = VALUES(endtime),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+			<if test="bean.createdTime!=null">
+				 created_time = VALUES(created_time),
+			</if>
+			<if test="bean.overTime!=null">
+				 over_time = VALUES(over_time),
+			</if>
+			<if test="bean.price!=null">
+				 price = VALUES(price),
+			</if>
+			<if test="bean.duration!=null">
+				 duration = VALUES(duration),
+			</if>
+			<if test="bean.startlatitude!=null">
+				 startlatitude = VALUES(startlatitude),
+			</if>
+			<if test="bean.startlongtitude!=null">
+				 startlongtitude = VALUES(startlongtitude),
+			</if>
+			<if test="bean.endlatitude!=null">
+				 endlatitude = VALUES(endlatitude),
+			</if>
+			<if test="bean.endlongtitude!=null">
+				 endlongtitude = VALUES(endlongtitude),
+			</if>
+			<if test="bean.appuserId!=null">
+				 appuser_id = VALUES(appuser_id),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easycar.entity.bean.Orders" useGeneratedKeys="true" keyProperty="ordersId">
+		 INSERT INTO orders(
+			 vehicle_id,
+			 driver_id,
+			 startlocation,
+			 endlocation,
+			 starttime,
+			 endtime,
+			 status,
+			 created_time,
+			 over_time,
+			 price,
+			 duration,
+			 startlatitude,
+			 startlongtitude,
+			 endlatitude,
+			 endlongtitude,
+			 appuser_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.vehicleId},
+				 #{item.driverId},
+				 #{item.startlocation},
+				 #{item.endlocation},
+				 #{item.starttime},
+				 #{item.endtime},
+				 #{item.status},
+				 #{item.createdTime},
+				 #{item.overTime},
+				 #{item.price},
+				 #{item.duration},
+				 #{item.startlatitude},
+				 #{item.startlongtitude},
+				 #{item.endlatitude},
+				 #{item.endlongtitude},
+				 #{item.appuserId}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easycar.entity.bean.Orders">
+		 INSERT INTO orders(
+			 vehicle_id,
+			 driver_id,
+			 startlocation,
+			 endlocation,
+			 starttime,
+			 endtime,
+			 status,
+			 created_time,
+			 over_time,
+			 price,
+			 duration,
+			 startlatitude,
+			 startlongtitude,
+			 endlatitude,
+			 endlongtitude,
+			 appuser_id
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.vehicleId},
+				 #{item.driverId},
+				 #{item.startlocation},
+				 #{item.endlocation},
+				 #{item.starttime},
+				 #{item.endtime},
+				 #{item.status},
+				 #{item.createdTime},
+				 #{item.overTime},
+				 #{item.price},
+				 #{item.duration},
+				 #{item.startlatitude},
+				 #{item.startlongtitude},
+				 #{item.endlatitude},
+				 #{item.endlongtitude},
+				 #{item.appuserId}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			vehicle_id = VALUES(vehicle_id),
+			driver_id = VALUES(driver_id),
+			startlocation = VALUES(startlocation),
+			endlocation = VALUES(endlocation),
+			starttime = VALUES(starttime),
+			endtime = VALUES(endtime),
+			status = VALUES(status),
+			created_time = VALUES(created_time),
+			over_time = VALUES(over_time),
+			price = VALUES(price),
+			duration = VALUES(duration),
+			startlatitude = VALUES(startlatitude),
+			startlongtitude = VALUES(startlongtitude),
+			endlatitude = VALUES(endlatitude),
+			endlongtitude = VALUES(endlongtitude),
+			appuser_id = VALUES(appuser_id)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easycar.entity.querybean.OrdersQuery">
+		 UPDATE orders
+ 		 <set> 
+			<if test="bean.vehicleId != null">
+				 vehicle_id = #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id = #{bean.driverId},
+			</if>
+			<if test="bean.startlocation != null">
+				 startlocation = #{bean.startlocation},
+			</if>
+			<if test="bean.endlocation != null">
+				 endlocation = #{bean.endlocation},
+			</if>
+			<if test="bean.starttime != null">
+				 starttime = #{bean.starttime},
+			</if>
+			<if test="bean.endtime != null">
+				 endtime = #{bean.endtime},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time = #{bean.createdTime},
+			</if>
+			<if test="bean.overTime != null">
+				 over_time = #{bean.overTime},
+			</if>
+			<if test="bean.price != null">
+				 price = #{bean.price},
+			</if>
+			<if test="bean.duration != null">
+				 duration = #{bean.duration},
+			</if>
+			<if test="bean.startlatitude != null">
+				 startlatitude = #{bean.startlatitude},
+			</if>
+			<if test="bean.startlongtitude != null">
+				 startlongtitude = #{bean.startlongtitude},
+			</if>
+			<if test="bean.endlatitude != null">
+				 endlatitude = #{bean.endlatitude},
+			</if>
+			<if test="bean.endlongtitude != null">
+				 endlongtitude = #{bean.endlongtitude},
+			</if>
+			<if test="bean.appuserId != null">
+				 appuser_id = #{bean.appuserId},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from orders
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据OrdersId修改-->
+	<update id="updateByOrdersId" parameterType="com.easycar.entity.bean.Orders">
+		 UPDATE orders
+ 		 <set> 
+			<if test="bean.vehicleId != null">
+				 vehicle_id = #{bean.vehicleId},
+			</if>
+			<if test="bean.driverId != null">
+				 driver_id = #{bean.driverId},
+			</if>
+			<if test="bean.startlocation != null">
+				 startlocation = #{bean.startlocation},
+			</if>
+			<if test="bean.endlocation != null">
+				 endlocation = #{bean.endlocation},
+			</if>
+			<if test="bean.starttime != null">
+				 starttime = #{bean.starttime},
+			</if>
+			<if test="bean.endtime != null">
+				 endtime = #{bean.endtime},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.createdTime != null">
+				 created_time = #{bean.createdTime},
+			</if>
+			<if test="bean.overTime != null">
+				 over_time = #{bean.overTime},
+			</if>
+			<if test="bean.price != null">
+				 price = #{bean.price},
+			</if>
+			<if test="bean.duration != null">
+				 duration = #{bean.duration},
+			</if>
+			<if test="bean.startlatitude != null">
+				 startlatitude = #{bean.startlatitude},
+			</if>
+			<if test="bean.startlongtitude != null">
+				 startlongtitude = #{bean.startlongtitude},
+			</if>
+			<if test="bean.endlatitude != null">
+				 endlatitude = #{bean.endlatitude},
+			</if>
+			<if test="bean.endlongtitude != null">
+				 endlongtitude = #{bean.endlongtitude},
+			</if>
+			<if test="bean.appuserId != null">
+				 appuser_id = #{bean.appuserId},
+			</if>
+ 		 </set>
+ 		 where orders_id=#{ordersId}
+	</update>
+
+	<!-- 根据OrdersId删除-->
+	<delete id="deleteByOrdersId">
+		delete from orders where orders_id=#{ordersId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByOrdersId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from orders where orders_id=#{ordersId}
+	</select>
+
+</mapper>

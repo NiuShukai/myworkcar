@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycar.mappers.VehicleMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easycar.entity.bean.Vehicle">
+		<!--车辆ID-->
+		<id column="vehicle_id" property="vehicleId"  />
+		<!--车牌号-->
+		<result column="license_plate" property="licensePlate"  />
+		<!--车辆型号-->
+		<result column="vehicle_model" property="vehicleModel"  />
+		<!--车辆状态（1可用、0维修中、1已派出等-->
+		<result column="vehicle_status" property="vehicleStatus"  />
+		<!--车辆图片-->
+		<result column="vehicle_photo" property="vehiclePhoto"  />
+		<!--车辆座位数-->
+		<result column="vehicle_seat" property="vehicleSeat"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 vehicle_id,license_plate,vehicle_model,vehicle_status,vehicle_photo,
+		 vehicle_seat
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.vehicleId != null">
+				 and  vehicle_id = #{query.vehicleId}
+			</if>
+			<if test="query.licensePlate != null and query.licensePlate!=''">
+				 and  license_plate = #{query.licensePlate}
+			</if>
+			<if test="query.vehicleModel != null and query.vehicleModel!=''">
+				 and  vehicle_model = #{query.vehicleModel}
+			</if>
+			<if test="query.vehicleStatus != null">
+				 and  vehicle_status = #{query.vehicleStatus}
+			</if>
+			<if test="query.vehiclePhoto != null and query.vehiclePhoto!=''">
+				 and  vehicle_photo = #{query.vehiclePhoto}
+			</if>
+			<if test="query.vehicleSeat != null">
+				 and  vehicle_seat = #{query.vehicleSeat}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.licensePlateFuzzy!= null  and query.licensePlateFuzzy!=''">
+				 and  license_plate like concat('%', #{query.licensePlateFuzzy}, '%')
+			</if>
+			<if test="query.vehicleModelFuzzy!= null  and query.vehicleModelFuzzy!=''">
+				 and  vehicle_model like concat('%', #{query.vehicleModelFuzzy}, '%')
+			</if>
+			<if test="query.vehiclePhotoFuzzy!= null  and query.vehiclePhotoFuzzy!=''">
+				 and  vehicle_photo like concat('%', #{query.vehiclePhotoFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM vehicle <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM vehicle <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easycar.entity.bean.Vehicle">
+		<selectKey keyProperty="bean.vehicleId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO vehicle
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.licensePlate != null">
+				 license_plate,
+			</if>
+			<if test="bean.vehicleModel != null">
+				 vehicle_model,
+			</if>
+			<if test="bean.vehicleStatus != null">
+				 vehicle_status,
+			</if>
+			<if test="bean.vehiclePhoto != null">
+				 vehicle_photo,
+			</if>
+			<if test="bean.vehicleSeat != null">
+				 vehicle_seat,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.licensePlate!=null">
+				 #{bean.licensePlate},
+			</if>
+			<if test="bean.vehicleModel!=null">
+				 #{bean.vehicleModel},
+			</if>
+			<if test="bean.vehicleStatus!=null">
+				 #{bean.vehicleStatus},
+			</if>
+			<if test="bean.vehiclePhoto!=null">
+				 #{bean.vehiclePhoto},
+			</if>
+			<if test="bean.vehicleSeat!=null">
+				 #{bean.vehicleSeat},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easycar.entity.bean.Vehicle">
+		 INSERT INTO vehicle
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.vehicleId != null">
+				 vehicle_id,
+			</if>
+			<if test="bean.licensePlate != null">
+				 license_plate,
+			</if>
+			<if test="bean.vehicleModel != null">
+				 vehicle_model,
+			</if>
+			<if test="bean.vehicleStatus != null">
+				 vehicle_status,
+			</if>
+			<if test="bean.vehiclePhoto != null">
+				 vehicle_photo,
+			</if>
+			<if test="bean.vehicleSeat != null">
+				 vehicle_seat,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.vehicleId!=null">
+				 #{bean.vehicleId},
+			</if>
+			<if test="bean.licensePlate!=null">
+				 #{bean.licensePlate},
+			</if>
+			<if test="bean.vehicleModel!=null">
+				 #{bean.vehicleModel},
+			</if>
+			<if test="bean.vehicleStatus!=null">
+				 #{bean.vehicleStatus},
+			</if>
+			<if test="bean.vehiclePhoto!=null">
+				 #{bean.vehiclePhoto},
+			</if>
+			<if test="bean.vehicleSeat!=null">
+				 #{bean.vehicleSeat},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.licensePlate!=null">
+				 license_plate = VALUES(license_plate),
+			</if>
+			<if test="bean.vehicleModel!=null">
+				 vehicle_model = VALUES(vehicle_model),
+			</if>
+			<if test="bean.vehicleStatus!=null">
+				 vehicle_status = VALUES(vehicle_status),
+			</if>
+			<if test="bean.vehiclePhoto!=null">
+				 vehicle_photo = VALUES(vehicle_photo),
+			</if>
+			<if test="bean.vehicleSeat!=null">
+				 vehicle_seat = VALUES(vehicle_seat),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easycar.entity.bean.Vehicle" useGeneratedKeys="true" keyProperty="vehicleId">
+		 INSERT INTO vehicle(
+			 license_plate,
+			 vehicle_model,
+			 vehicle_status,
+			 vehicle_photo,
+			 vehicle_seat
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.licensePlate},
+				 #{item.vehicleModel},
+				 #{item.vehicleStatus},
+				 #{item.vehiclePhoto},
+				 #{item.vehicleSeat}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easycar.entity.bean.Vehicle">
+		 INSERT INTO vehicle(
+			 license_plate,
+			 vehicle_model,
+			 vehicle_status,
+			 vehicle_photo,
+			 vehicle_seat
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.licensePlate},
+				 #{item.vehicleModel},
+				 #{item.vehicleStatus},
+				 #{item.vehiclePhoto},
+				 #{item.vehicleSeat}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			license_plate = VALUES(license_plate),
+			vehicle_model = VALUES(vehicle_model),
+			vehicle_status = VALUES(vehicle_status),
+			vehicle_photo = VALUES(vehicle_photo),
+			vehicle_seat = VALUES(vehicle_seat)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easycar.entity.querybean.VehicleQuery">
+		 UPDATE vehicle
+ 		 <set> 
+			<if test="bean.licensePlate != null">
+				 license_plate = #{bean.licensePlate},
+			</if>
+			<if test="bean.vehicleModel != null">
+				 vehicle_model = #{bean.vehicleModel},
+			</if>
+			<if test="bean.vehicleStatus != null">
+				 vehicle_status = #{bean.vehicleStatus},
+			</if>
+			<if test="bean.vehiclePhoto != null">
+				 vehicle_photo = #{bean.vehiclePhoto},
+			</if>
+			<if test="bean.vehicleSeat != null">
+				 vehicle_seat = #{bean.vehicleSeat},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from vehicle
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据VehicleId修改-->
+	<update id="updateByVehicleId" parameterType="com.easycar.entity.bean.Vehicle">
+		 UPDATE vehicle
+ 		 <set> 
+			<if test="bean.licensePlate != null">
+				 license_plate = #{bean.licensePlate},
+			</if>
+			<if test="bean.vehicleModel != null">
+				 vehicle_model = #{bean.vehicleModel},
+			</if>
+			<if test="bean.vehicleStatus != null">
+				 vehicle_status = #{bean.vehicleStatus},
+			</if>
+			<if test="bean.vehiclePhoto != null">
+				 vehicle_photo = #{bean.vehiclePhoto},
+			</if>
+			<if test="bean.vehicleSeat != null">
+				 vehicle_seat = #{bean.vehicleSeat},
+			</if>
+ 		 </set>
+ 		 where vehicle_id=#{vehicleId}
+	</update>
+
+	<!-- 根据VehicleId删除-->
+	<delete id="deleteByVehicleId">
+		delete from vehicle where vehicle_id=#{vehicleId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByVehicleId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from vehicle where vehicle_id=#{vehicleId}
+	</select>
+
+</mapper>

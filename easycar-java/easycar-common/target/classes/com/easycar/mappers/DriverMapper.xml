@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.easycar.mappers.DriverMapper">
+
+	<!--实体映射-->
+	<resultMap id="base_result_map" type="com.easycar.entity.bean.Driver">
+		<!--司机ID-->
+		<id column="driver_id" property="driverId"  />
+		<!--司机姓名-->
+		<result column="driver_name" property="driverName"  />
+		<!--联系电话-->
+		<result column="phone" property="phone"  />
+		<!--驾照号码-->
+		<result column="license_number" property="licenseNumber"  />
+		<!--司机状态（0空闲、1驾驶中、2休息中等）-->
+		<result column="status" property="status"  />
+		<!--家庭住址-->
+		<result column="address" property="address"  />
+	</resultMap>
+
+
+	<!-- 通用查询结果列-->
+	<sql id="base_column_list">
+		 driver_id,driver_name,phone,license_number,status,
+		 address
+	</sql>
+
+	<sql id="base_condition_filed">
+			<if test="query.driverId != null">
+				 and  driver_id = #{query.driverId}
+			</if>
+			<if test="query.driverName != null and query.driverName!=''">
+				 and  driver_name = #{query.driverName}
+			</if>
+			<if test="query.phone != null and query.phone!=''">
+				 and  phone = #{query.phone}
+			</if>
+			<if test="query.licenseNumber != null and query.licenseNumber!=''">
+				 and  license_number = #{query.licenseNumber}
+			</if>
+			<if test="query.status != null">
+				 and  status = #{query.status}
+			</if>
+			<if test="query.address != null and query.address!=''">
+				 and  address = #{query.address}
+			</if>
+	</sql>
+	<!-- 通用条件列-->
+	<sql id="base_condition">
+	 <where>
+		 <include refid="base_condition_filed" />
+	 </where>
+	</sql>
+
+	<!-- 通用查询条件列-->
+	<sql id="query_condition">
+	 <where>
+			<include refid="base_condition_filed" />
+			<if test="query.driverNameFuzzy!= null  and query.driverNameFuzzy!=''">
+				 and  driver_name like concat('%', #{query.driverNameFuzzy}, '%')
+			</if>
+			<if test="query.phoneFuzzy!= null  and query.phoneFuzzy!=''">
+				 and  phone like concat('%', #{query.phoneFuzzy}, '%')
+			</if>
+			<if test="query.licenseNumberFuzzy!= null  and query.licenseNumberFuzzy!=''">
+				 and  license_number like concat('%', #{query.licenseNumberFuzzy}, '%')
+			</if>
+			<if test="query.addressFuzzy!= null  and query.addressFuzzy!=''">
+				 and  address like concat('%', #{query.addressFuzzy}, '%')
+			</if>
+	 </where>
+	</sql>
+
+	<!-- 查询集合-->
+	<select id="selectList" resultMap="base_result_map" >
+		 SELECT <include refid="base_column_list" /> FROM driver <include refid="query_condition" />
+		 <if test="query.orderBy!=null">
+			 order by ${query.orderBy}
+		 </if>
+		 <if test="query.simplePage!=null">
+			 limit #{query.simplePage.start},#{query.simplePage.end}
+		 </if>
+	</select>
+
+	<!-- 查询数量-->
+	<select id="selectCount" resultType="java.lang.Integer" >
+		 SELECT count(1) FROM driver <include refid="query_condition" />
+	</select>
+
+	<!-- 插入 （匹配有值的字段）-->
+	<insert id="insert" parameterType="com.easycar.entity.bean.Driver">
+		<selectKey keyProperty="bean.driverId" resultType="Integer" order="AFTER">
+			SELECT LAST_INSERT_ID()
+		</selectKey>
+		 INSERT INTO driver
+		 <trim prefix="(" suffix=")" suffixOverrides="," >
+			<if test="bean.driverName != null">
+				 driver_name,
+			</if>
+			<if test="bean.phone != null">
+				 phone,
+			</if>
+			<if test="bean.licenseNumber != null">
+				 license_number,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.address != null">
+				 address,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides="," >
+			<if test="bean.driverName!=null">
+				 #{bean.driverName},
+			</if>
+			<if test="bean.phone!=null">
+				 #{bean.phone},
+			</if>
+			<if test="bean.licenseNumber!=null">
+				 #{bean.licenseNumber},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.address!=null">
+				 #{bean.address},
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 插入或者更新 （匹配有值的字段）-->
+	<insert id="insertOrUpdate" parameterType="com.easycar.entity.bean.Driver">
+		 INSERT INTO driver
+		 <trim prefix="(" suffix=")" suffixOverrides=",">
+			<if test="bean.driverId != null">
+				 driver_id,
+			</if>
+			<if test="bean.driverName != null">
+				 driver_name,
+			</if>
+			<if test="bean.phone != null">
+				 phone,
+			</if>
+			<if test="bean.licenseNumber != null">
+				 license_number,
+			</if>
+			<if test="bean.status != null">
+				 status,
+			</if>
+			<if test="bean.address != null">
+				 address,
+			</if>
+		 </trim>
+		 <trim prefix="values (" suffix=")" suffixOverrides=",">
+			<if test="bean.driverId!=null">
+				 #{bean.driverId},
+			</if>
+			<if test="bean.driverName!=null">
+				 #{bean.driverName},
+			</if>
+			<if test="bean.phone!=null">
+				 #{bean.phone},
+			</if>
+			<if test="bean.licenseNumber!=null">
+				 #{bean.licenseNumber},
+			</if>
+			<if test="bean.status!=null">
+				 #{bean.status},
+			</if>
+			<if test="bean.address!=null">
+				 #{bean.address},
+			</if>
+		 </trim>
+		 on DUPLICATE key update 
+		 <trim prefix="" suffix="" suffixOverrides=",">
+			<if test="bean.driverName!=null">
+				 driver_name = VALUES(driver_name),
+			</if>
+			<if test="bean.phone!=null">
+				 phone = VALUES(phone),
+			</if>
+			<if test="bean.licenseNumber!=null">
+				 license_number = VALUES(license_number),
+			</if>
+			<if test="bean.status!=null">
+				 status = VALUES(status),
+			</if>
+			<if test="bean.address!=null">
+				 address = VALUES(address),
+			</if>
+		 </trim>
+	</insert>
+
+	<!-- 添加 （批量插入）-->
+	<insert id="insertBatch" parameterType="com.easycar.entity.bean.Driver" useGeneratedKeys="true" keyProperty="driverId">
+		 INSERT INTO driver(
+			 driver_name,
+			 phone,
+			 license_number,
+			 status,
+			 address
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.driverName},
+				 #{item.phone},
+				 #{item.licenseNumber},
+				 #{item.status},
+				 #{item.address}
+			 )
+		 </foreach>
+	</insert>
+
+	<!-- 批量新增修改 （批量插入）-->
+	<insert id="insertOrUpdateBatch" parameterType="com.easycar.entity.bean.Driver">
+		 INSERT INTO driver(
+			 driver_name,
+			 phone,
+			 license_number,
+			 status,
+			 address
+		 )values
+		 <foreach collection="list" item="item" separator=",">
+			 (
+				 #{item.driverName},
+				 #{item.phone},
+				 #{item.licenseNumber},
+				 #{item.status},
+				 #{item.address}
+			 )
+		 </foreach>
+			on DUPLICATE key update 
+			driver_name = VALUES(driver_name),
+			phone = VALUES(phone),
+			license_number = VALUES(license_number),
+			status = VALUES(status),
+			address = VALUES(address)
+	</insert>
+
+	<!--多条件修改-->
+	<update id="updateByParam" parameterType="com.easycar.entity.querybean.DriverQuery">
+		 UPDATE driver
+ 		 <set> 
+			<if test="bean.driverName != null">
+				 driver_name = #{bean.driverName},
+			</if>
+			<if test="bean.phone != null">
+				 phone = #{bean.phone},
+			</if>
+			<if test="bean.licenseNumber != null">
+				 license_number = #{bean.licenseNumber},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.address != null">
+				 address = #{bean.address},
+			</if>
+ 		 </set>
+ 		 <include refid="query_condition" />
+	</update>
+
+	<!--多条件删除-->
+	<delete id="deleteByParam">
+		 delete from driver
+ 		 <include refid="query_condition" />
+	</delete>
+
+	<!-- 根据DriverId修改-->
+	<update id="updateByDriverId" parameterType="com.easycar.entity.bean.Driver">
+		 UPDATE driver
+ 		 <set> 
+			<if test="bean.driverName != null">
+				 driver_name = #{bean.driverName},
+			</if>
+			<if test="bean.phone != null">
+				 phone = #{bean.phone},
+			</if>
+			<if test="bean.licenseNumber != null">
+				 license_number = #{bean.licenseNumber},
+			</if>
+			<if test="bean.status != null">
+				 status = #{bean.status},
+			</if>
+			<if test="bean.address != null">
+				 address = #{bean.address},
+			</if>
+ 		 </set>
+ 		 where driver_id=#{driverId}
+	</update>
+
+	<!-- 根据DriverId删除-->
+	<delete id="deleteByDriverId">
+		delete from driver where driver_id=#{driverId}
+	</delete>
+
+	<!-- 根据PrimaryKey获取对象-->
+	<select id="selectByDriverId" resultMap="base_result_map" >
+		select <include refid="base_column_list" /> from driver where driver_id=#{driverId}
+	</select>
+
+</mapper>
